@@ -19,12 +19,17 @@ namespace lldb
 char* libraryPath;
 const char* clrPath = "/usr/share/dotnet/shared/Microsoft.NETCore.App/2.2.1/";
 
-
 class SetClrPathCommand : public lldb::SBCommandPluginInterface
 {
 public:
     virtual bool DoExecute(lldb::SBDebugger debugger, char **command, lldb::SBCommandReturnObject &result)
     {
+        if (command == NULL){
+            std::cout << "The path cannot be empty" << std::endl;
+            return false;
+        }
+
+        clrPath = strdup(command[0]);
 
         return true;
     }
