@@ -55,6 +55,7 @@ public:
 
         _invokeFunc(_pluginName, _commandName, services, command == nullptr ? "" : command[0]);
 
+        return true;
     }
 };
 
