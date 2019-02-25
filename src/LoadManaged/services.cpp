@@ -1274,22 +1274,22 @@ LLDBServices::GetModuleNameString(
 
     if (directory) {
         //std::cout << "Directory: " << directory << std::endl;
-        *nameSize = (strlen(fileName) + strlen(directory)) * 2 + 2;
+        *nameSize = (strlen(fileName) + strlen(directory)) + 1;
     }else {
-        *nameSize = (strlen(fileName)) * 2;
+        *nameSize = (strlen(fileName));
     }
 
     if (bufferSize < *nameSize){
-        return S_OK;
+        return S_FALSE;
     }
 
     if (directory) {
         stpncpy(buffer, directory, strlen(directory));
         stpncpy(buffer + strlen(directory), "/", 1);
-        stpncpy(buffer + strlen(directory) + 1, fileName, strlen(fileName));
+        stpncpy(buffer + strlen(directory) + 1, fileName, strlen(fileName) + 1);
     }
     else{
-        stpncpy(buffer, fileName, strlen(fileName));
+        stpncpy(buffer, fileName, strlen(fileName) + 1);
     }
     //std::cout << "Result: " << buffer << std::endl;
 
