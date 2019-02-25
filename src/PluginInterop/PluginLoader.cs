@@ -58,7 +58,14 @@ namespace PluginInterop
                 return;
             }
 
-            method.Invoke(null, new object[] { debugClient, args });
+            try
+            {
+                method.Invoke(null, new object[] { debugClient, args });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occured while executing command {0}: {1}", exportName, ex);
+            }
         }
     }
 }
