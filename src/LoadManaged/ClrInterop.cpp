@@ -150,7 +150,63 @@ class ClrInterop
         return (std::strcmp(envValue, "1") == 0 || strcasecmp(envValue, "true") == 0) ? "true" : "false";
     }
 
+    bool InitializeDelegates()
+    {
+        GetExportCount = (GetExportCountFunc*)CreateDelegate(
+                "PluginInterop",
+                "PluginInterop.PluginLoader",
+                "GetExportCount");
+
+        if (GetExportCount == nullptr)
+        {
+            std::cout << "Could not find function GetExportCount in PluginInterop.dll" << std::endl;
+            return false;
+        }
+
+        GetExportName = (GetExportNameFunc*)CreateDelegate(
+                "PluginInterop",
+                "PluginInterop.PluginLoader",
+                "GetExportName");
+
+        if (GetExportName == nullptr)
+        {
+            std::cout << "Could not find function GetExportName in PluginInterop.dll" << std::endl;
+            return false;
+        }
+
+        LoadPlugin = (LoadPluginFunc*)CreateDelegate(
+                "PluginInterop",
+                "PluginInterop.PluginLoader",
+                "LoadPlugin");
+
+        if (LoadPlugin == nullptr)
+        {
+            std::cout << "Could not find function LoadPlugin in PluginInterop.dll" << std::endl;
+            return false;
+        }
+
+        Invoke = (InvokeFunc*)CreateDelegate(
+                "PluginInterop",
+                "PluginInterop.PluginLoader",
+                "Invoke");
+
+        if (Invoke == nullptr)
+        {
+            std::cout << "Could not find function Invoke in PluginInterop.dll" << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
 public:
+    bool Initialized;
+
+    GetExportCountFunc* GetExportCount;
+    GetExportNameFunc* GetExportName;
+    LoadPluginFunc* LoadPlugin;
+    InvokeFunc* Invoke;
+
     int Initialize(
             const char* name,
             const char* currentExeAbsolutePath,
@@ -284,7 +340,15 @@ public:
                 }
                 else
                 {
-                    // Store hostHandle
+                    Initialized = true;
+
+                    if (!InitializeDelegates())
+                    {
+                        std::cout << "An error occured while calling PluginInterop.dll. "
+                        << "Make sure the right version of the file is located in " << currentExeAbsolutePath << std::endl;
+                        return -1;
+                    }
+
                     return 0;
                 }
             }
